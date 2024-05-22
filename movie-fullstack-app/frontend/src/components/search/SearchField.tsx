@@ -1,6 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
+import debounced from '../../utils';
 
 const Search = styled('div')(({ theme }) => ({
 	position: 'relative',
@@ -45,7 +46,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	},
 }));
 
-function SearchField() {
+function SearchField({ setSearchTerm }: { setSearchTerm: (searchTerm: string) => void }) {
+	const debouncedSetSearchTerm = debounced((value) => setSearchTerm(value), 500);
+
 	return (
 		<Search>
 			<SearchIconWrapper>
@@ -55,6 +58,7 @@ function SearchField() {
 				placeholder="Enter a movie name to initiate search…"
 				inputProps={{ 'aria-label': 'search' }}
 				color="primary"
+				onChange={(e) => debouncedSetSearchTerm(e.target.value)}
 			/>
 		</Search>
 	);
