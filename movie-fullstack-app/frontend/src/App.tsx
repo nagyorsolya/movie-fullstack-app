@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Info from './components/info/Info';
 import MoviePoster from './components/movie-poster/MoviePoster';
 import SearchField from './components/search/SearchField';
-import { getError, getIsFetchedFromCache, getIsLoading, getMovies, getNumberOfResults } from './redux/selectors';
+import { getError, getIsFetchedFromCache, getIsLoading, getMovies, getNumOfTotalPages } from './redux/selectors';
 import { AppDispatch } from './redux/store';
 import { fetchMovies } from './redux/thunks';
 
@@ -18,7 +18,7 @@ function App() {
 	const isLoading = useSelector(getIsLoading);
 	const error = useSelector(getError);
 	const fetchedFromCache = useSelector(getIsFetchedFromCache);
-	const numberOfResults = useSelector(getNumberOfResults);
+	const totalPages = useSelector(getNumOfTotalPages);
 
 	useEffect(() => {
 		if (searchTerm.length >= 3) {
@@ -27,6 +27,7 @@ function App() {
 	}, [searchTerm, dispatch, page]);
 	return (
 		<>
+			{/* If i will have time, I will make the search bar sticky */}
 			<Box display="flex" marginTop="20px" justifyContent="center">
 				<Box flexGrow={2} maxWidth="400px">
 					<SearchField setSearchTerm={setSearchTerm} />
@@ -52,7 +53,7 @@ function App() {
 				container
 				spacing={2}
 				style={{ display: 'flex', flexWrap: 'wrap', margin: '20px' }}
-				maxHeight={numberOfResults > 20 ? '75vh' : '90vh'}
+				maxHeight={totalPages > 1 ? '75vh' : '90vh'}
 				overflow="scroll"
 			>
 				{isLoading &&
@@ -72,11 +73,9 @@ function App() {
 					);
 				})}
 			</Grid>
-			{/* As far as I've seen the API always returns exactly 20 results or less, so pagination won't ever be used this way,
-			however, I tried it and it works when we request page 2,3 etc. */}
-			{numberOfResults > 20 && (
+			{totalPages > 1 && (
 				<Box display="flex" justifyContent="center">
-					<Pagination count={numberOfResults} color="primary" onChange={(e, value) => setPage(value)} />
+					<Pagination count={totalPages} color="primary" onChange={(e, value) => setPage(value)} />
 				</Box>
 			)}
 			{/* If I had more time, I would have implemented a toaster component for both the retrieved from api/cache and the error message */}

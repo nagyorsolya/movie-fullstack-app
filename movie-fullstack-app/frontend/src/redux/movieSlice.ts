@@ -13,7 +13,7 @@ interface MoviesState {
 	error: string;
 	isLoading: boolean;
 	fetchedFromCache: boolean;
-	numberOfResults: number;
+	total_pages: number;
 }
 
 const initialState: MoviesState = {
@@ -21,7 +21,7 @@ const initialState: MoviesState = {
 	error: '',
 	isLoading: false,
 	fetchedFromCache: false,
-	numberOfResults: 0,
+	total_pages: 0,
 };
 
 export const moviesSlice = createSlice({
@@ -35,7 +35,7 @@ export const moviesSlice = createSlice({
 			})
 			.addCase(fetchMovies.fulfilled, (state, action) => {
 				state.movies = action.payload.results;
-				state.numberOfResults = action.payload.results.length;
+				state.total_pages = action.payload.total_pages;
 				state.isLoading = false;
 			})
 			.addCase(fetchMovies.rejected, (state, action) => {
