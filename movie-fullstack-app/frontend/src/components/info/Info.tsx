@@ -1,15 +1,15 @@
 import { Typography } from '@mui/material';
 
 type InfoProps = {
-	retrievedFromCache: boolean;
 	style: { [key: string]: string };
 	align: 'left' | 'center' | 'right';
+	message: string;
 };
 
-function Info({ retrievedFromCache, style, align = 'center' }: InfoProps) {
+function Info({ message, style, align = 'center' }: InfoProps) {
 	return (
 		<Typography variant="h6" align={align} style={style}>
-			{`Results retrieved from ${retrievedFromCache ? 'cache' : 'API'}`}
+			{message}
 		</Typography>
 	);
 }
