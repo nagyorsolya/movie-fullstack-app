@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  db:
+    build: .
+    container_name: moviesdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: moviesdatabase
+    ports:
+      - "5432:5432"
