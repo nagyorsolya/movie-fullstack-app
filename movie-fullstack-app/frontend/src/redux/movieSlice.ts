@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchMovies } from './thunks';
 
-interface Movie {
+export interface Movie {
 	title: string;
 	release_date: string;
 	backdrop_path: string;
@@ -35,6 +35,7 @@ export const moviesSlice = createSlice({
 			})
 			.addCase(fetchMovies.fulfilled, (state, action) => {
 				state.movies = action.payload.results;
+				state.numberOfResults = action.payload.results.length;
 				state.isLoading = false;
 			})
 			.addCase(fetchMovies.rejected, (state, action) => {
