@@ -68,7 +68,7 @@ function App() {
 				{movies.map((el) => {
 					return (
 						<Grid item xs={12} sm={6} md={4} lg={3} key={el.id}>
-							<MoviePoster title={el.title} year={el.release_date} relativeFilePath={el.backdrop_path} />
+							<MoviePoster title={el.title} year={el.release_date} relativeFilePath={el.poster_path} />
 						</Grid>
 					);
 				})}

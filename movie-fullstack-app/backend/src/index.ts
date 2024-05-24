@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import morgan from "morgan";
 import url from "url";
-import { getFromCache } from "./controllers/movieControllers";
+import { getFromApi, getFromCache } from "./controllers/movieControllers";
 import { AppDataSource } from "./data-source";
 import { isDateWithinRange } from "./utils";
 
@@ -30,7 +30,8 @@ AppDataSource.initialize()
 app.get("/movies", async (req: Request, res: Response) => {
   const parsedUrl = url.parse(req.url, true);
   const query = parsedUrl.query;
-  const searchTerm = await getFromCache(query.query as string);
+  const page = query?.page ? (query.page as string) : "1";
+  const searchTerm = await getFromCache(query.query as string, page);
 
   if (searchTerm && isDateWithinRange(new Date(searchTerm.lastSearch))) {
     searchTerm.cacheHitCount += 1;
@@ -40,6 +41,13 @@ app.get("/movies", async (req: Request, res: Response) => {
       fetchedFromCache: true,
       total_pages: searchTerm.total_pages,
     });
+  } else {
+    const result = await getFromApi(query.query as string, parseInt(page));
+    console.log(result);
+    res.status(200).json({
+      results: result.results,
+      fetchedFromCache: false,
+      total_pages: result.total_pages,
+    });
   }
-  res.send("init");
 });

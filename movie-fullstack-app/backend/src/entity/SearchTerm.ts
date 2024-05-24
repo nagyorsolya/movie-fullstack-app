@@ -20,4 +20,7 @@ export class SearchTerm {
 
   @Column({ nullable: false, default: 1 })
   total_pages: number;
+
+  @Column({ nullable: false, default: 1 })
+  page: number;
 }
