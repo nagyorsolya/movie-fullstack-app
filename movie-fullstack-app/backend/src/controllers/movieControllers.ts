@@ -18,8 +18,6 @@ export const getFromCache = async (keyword: string, page: string) => {
   return searchTerm;
 };
 
-export const saveToCache = () => {};
-
 export const getFromApi = async (
   searchTerm: string,
   page = 1

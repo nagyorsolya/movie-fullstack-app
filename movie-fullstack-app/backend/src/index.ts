@@ -47,33 +47,46 @@ app.get("/movies", async (req: Request, res: Response) => {
       total_pages: searchTerm.total_pages,
     });
   } else {
-    const result = await getFromApi(query.query as string, parseInt(page));
-    const searchTermRepository = AppDataSource.getRepository(SearchTerm);
+    try {
+      const result = await getFromApi(query.query as string, parseInt(page));
+      const searchTermRepository = AppDataSource.getRepository(SearchTerm);
 
-    const updatedSearchTerm = {
-      lastSearch: new Date(),
-      total_pages: result.total_pages,
-      page: parseInt(page),
-      cacheHitCount: 0,
-    };
+      const updatedSearchTerm = {
+        total_pages: result.total_pages,
+        page: parseInt(page),
+        cacheHitCount: 0,
+      };
 
-    const movies = mapApiResultsToMovies(result.results);
-    if (searchTerm) {
-      searchTerm.movies = mapSearchTermToMovie(searchTerm, movies);
-      await searchTermRepository.save(searchTerm);
-    } else {
-      const newSearchTerm = searchTermRepository.create({
-        ...updatedSearchTerm,
-        keyword: query.query as string,
+      const movies = mapApiResultsToMovies(result.results);
+      if (searchTerm) {
+        searchTerm.movies = mapSearchTermToMovie(searchTerm, movies);
+        await searchTermRepository.save(searchTerm);
+      } else {
+        const newSearchTerm = searchTermRepository.create({
+          ...updatedSearchTerm,
+          keyword: query.query as string,
+          lastSearch: new Date(),
+        });
+        const savedSearchTerm = await searchTermRepository.save(newSearchTerm);
+        savedSearchTerm.movies = mapSearchTermToMovie(savedSearchTerm, movies);
+        await searchTermRepository.save(savedSearchTerm);
+      }
+
+      res.status(200).json({
+        results: result.results,
+        fetchedFromCache: false,
+        total_pages: result.total_pages,
       });
-      const savedSearchTerm = await searchTermRepository.save(newSearchTerm);
-      savedSearchTerm.movies = mapSearchTermToMovie(savedSearchTerm, movies);
-      await searchTermRepository.save(savedSearchTerm);
+    } catch (error: any) {
+      if ([401, 403].includes(error?.response?.status)) {
+        res.status(error.response.status).json({
+          message: "You are not allowed to view the requested resource.",
+        });
+      }
+      if (error?.response?.startsWith(5)) {
+        res.status(500).json({ message: "Failed to fetch." });
+      }
+      res.json({ message: "An unknown error occured." });
     }
-    res.status(200).json({
-      results: result.results,
-      fetchedFromCache: false,
-      total_pages: result.total_pages,
-    });
   }
 });
