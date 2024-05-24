@@ -43,6 +43,7 @@ export const moviesSlice = createSlice({
 			})
 			.addCase(fetchMovies.fulfilled, (state, action) => {
 				state.movies = action.payload.results;
+				state.fetchedFromCache = action.payload.fetchedFromCache;
 				state.total_pages = action.payload.total_pages;
 				state.isLoading = false;
 			})

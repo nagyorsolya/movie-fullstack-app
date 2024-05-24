@@ -79,7 +79,7 @@ function App() {
 				</Box>
 			)}
 			{/* If I had more time, I would have implemented a toaster component for both the retrieved from api/cache and the error message */}
-			{error && <Info message="error" align="center" style={{ marginTop: '30px', color: 'red' }} />}
+			{error && <Info message={error} align="center" style={{ marginTop: '30px', color: 'red' }} />}
 		</>
 	);
 }

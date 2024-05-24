@@ -5,6 +5,7 @@ import morgan from "morgan";
 import url from "url";
 import { getFromApi, getFromCache } from "./controllers/movieControllers";
 import { AppDataSource } from "./data-source";
+import { Movie } from "./entity/Movie";
 import { SearchTerm } from "./entity/SearchTerm";
 import {
   isDateWithinRange,
@@ -59,6 +60,11 @@ app.get("/movies", async (req: Request, res: Response) => {
 
       const movies = mapApiResultsToMovies(result.results);
       if (searchTerm) {
+        await AppDataSource.createQueryBuilder()
+          .delete()
+          .from(Movie)
+          .where("searchTermId = :id", { id: searchTerm.id })
+          .execute();
         searchTerm.movies = mapSearchTermToMovie(searchTerm, movies);
         await searchTermRepository.save(searchTerm);
       } else {
@@ -83,7 +89,7 @@ app.get("/movies", async (req: Request, res: Response) => {
           message: "You are not allowed to view the requested resource.",
         });
       }
-      if (error?.response?.startsWith(5)) {
+      if (error?.response?.status.startsWith(5)) {
         res.status(500).json({ message: "Failed to fetch." });
       }
       res.json({ message: "An unknown error occured." });
