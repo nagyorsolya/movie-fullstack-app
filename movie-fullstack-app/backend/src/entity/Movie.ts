@@ -13,13 +13,13 @@ export class Movie {
   id: string;
 
   @Column({ nullable: false })
-  original_title: string;
+  title: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   release_date: string;
 
   @Column({ nullable: true })
-  backdrop_path: string;
+  poster_path: string;
 
   @ManyToOne(() => SearchTerm, (search_term) => search_term.movies)
   @JoinColumn({ name: "searchTermId" })

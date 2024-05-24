@@ -10,6 +10,7 @@ export const getFromCache = async (keyword: string, page: string) => {
   const searchTerm = await AppDataSource.createQueryBuilder()
     .select("searchTerm")
     .from(SearchTerm, "searchTerm")
+    .leftJoinAndSelect("searchTerm.movies", "movie")
     .where("searchTerm.keyword ILIKE :keyword", { keyword })
     .andWhere("searchTerm.page = :page", { page })
     .getOne();

@@ -12,7 +12,7 @@ export class SearchTerm {
   @Column({ type: "timestamp" })
   lastSearch: Date;
 
-  @OneToMany(() => Movie, (movie) => movie.search_term)
+  @OneToMany(() => Movie, (movie) => movie.search_term, { cascade: true })
   movies: Movie[];
 
   @Column({ nullable: false, default: 0 })

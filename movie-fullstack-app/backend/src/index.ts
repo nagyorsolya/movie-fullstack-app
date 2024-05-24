@@ -5,7 +5,12 @@ import morgan from "morgan";
 import url from "url";
 import { getFromApi, getFromCache } from "./controllers/movieControllers";
 import { AppDataSource } from "./data-source";
-import { isDateWithinRange } from "./utils";
+import { SearchTerm } from "./entity/SearchTerm";
+import {
+  isDateWithinRange,
+  mapApiResultsToMovies,
+  mapSearchTermToMovie,
+} from "./utils";
 
 dotenv.config();
 
@@ -43,7 +48,28 @@ app.get("/movies", async (req: Request, res: Response) => {
     });
   } else {
     const result = await getFromApi(query.query as string, parseInt(page));
-    console.log(result);
+    const searchTermRepository = AppDataSource.getRepository(SearchTerm);
+
+    const updatedSearchTerm = {
+      lastSearch: new Date(),
+      total_pages: result.total_pages,
+      page: parseInt(page),
+      cacheHitCount: 0,
+    };
+
+    const movies = mapApiResultsToMovies(result.results);
+    if (searchTerm) {
+      searchTerm.movies = mapSearchTermToMovie(searchTerm, movies);
+      await searchTermRepository.save(searchTerm);
+    } else {
+      const newSearchTerm = searchTermRepository.create({
+        ...updatedSearchTerm,
+        keyword: query.query as string,
+      });
+      const savedSearchTerm = await searchTermRepository.save(newSearchTerm);
+      savedSearchTerm.movies = mapSearchTermToMovie(savedSearchTerm, movies);
+      await searchTermRepository.save(savedSearchTerm);
+    }
     res.status(200).json({
       results: result.results,
       fetchedFromCache: false,
