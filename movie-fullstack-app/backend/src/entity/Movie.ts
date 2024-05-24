@@ -27,4 +27,7 @@ export class Movie {
 
   @Column({ nullable: false })
   searchTermId: number;
+
+  @Column({ nullable: false, default: 1 })
+  page: number;
 }

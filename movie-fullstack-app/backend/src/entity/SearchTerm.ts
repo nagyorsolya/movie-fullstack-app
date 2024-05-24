@@ -9,9 +9,15 @@ export class SearchTerm {
   @Column({ nullable: false })
   keyword: string;
 
-  @Column({ nullable: false })
-  lastSearch: string;
+  @Column({ type: "timestamp" })
+  lastSearch: Date;
 
   @OneToMany(() => Movie, (movie) => movie.search_term)
   movies: Movie[];
+
+  @Column({ nullable: false, default: 0 })
+  cacheHitCount: number;
+
+  @Column({ nullable: false, default: 1 })
+  total_pages: number;
 }
