@@ -57,6 +57,7 @@ app.get("/movies", async (req: Request, res: Response) => {
         total_pages: result.total_pages,
         page: parseInt(page),
         cacheHitCount: 0,
+        lastSearch: new Date(),
       };
 
       const movies = mapApiResultsToMovies(result.results, movieRepository);
@@ -66,8 +67,11 @@ app.get("/movies", async (req: Request, res: Response) => {
           .from(Movie)
           .where("searchTermId = :id", { id: searchTerm.id })
           .execute();
-        searchTerm.movies = mapSearchTermToMovie(searchTerm, movies);
-        await searchTermRepository.save(searchTerm);
+        await searchTermRepository.save({
+          ...updatedSearchTerm,
+          movies: mapSearchTermToMovie(searchTerm, movies),
+          id: searchTerm.id,
+        });
       } else {
         const newSearchTerm = searchTermRepository.create({
           ...updatedSearchTerm,
