@@ -65,6 +65,7 @@ function App() {
 							<Skeleton width={220} />
 						</Grid>
 					))}
+				{/* would have been nice to show a no results message if the search didn't find any */}
 				{movies.map((el) => {
 					return (
 						<Grid item xs={12} sm={6} md={4} lg={3} key={el.id}>
