@@ -72,7 +72,7 @@ app.get("/movies", async (req: Request, res: Response) => {
           movies: mapSearchTermToMovie(searchTerm, movies),
           id: searchTerm.id,
         });
-      } else {
+      } else if (result.results.length) {
         const newSearchTerm = searchTermRepository.create({
           ...updatedSearchTerm,
           keyword: query.query as string,
