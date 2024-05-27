@@ -51,6 +51,7 @@ app.get("/movies", async (req: Request, res: Response) => {
     try {
       const result = await getFromApi(query.query as string, parseInt(page));
       const searchTermRepository = AppDataSource.getRepository(SearchTerm);
+      const movieRepository = AppDataSource.getRepository(Movie);
 
       const updatedSearchTerm = {
         total_pages: result.total_pages,
@@ -58,7 +59,7 @@ app.get("/movies", async (req: Request, res: Response) => {
         cacheHitCount: 0,
       };
 
-      const movies = mapApiResultsToMovies(result.results);
+      const movies = mapApiResultsToMovies(result.results, movieRepository);
       if (searchTerm) {
         await AppDataSource.createQueryBuilder()
           .delete()

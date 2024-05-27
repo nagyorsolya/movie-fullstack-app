@@ -1,3 +1,4 @@
+import { Repository } from "typeorm";
 import { AppDataSource } from "./data-source";
 import { Movie } from "./entity/Movie";
 import { SearchTerm } from "./entity/SearchTerm";
@@ -17,8 +18,10 @@ export const mapSearchTermToMovie = (
   });
 };
 
-export const mapApiResultsToMovies = (results: IMovie[]) => {
-  const movieRepository = AppDataSource.getRepository(Movie);
+export const mapApiResultsToMovies = (
+  results: IMovie[],
+  movieRepository: Repository<Movie>
+) => {
   return results.map((resultMovie) => {
     const { title, release_date, poster_path } = resultMovie;
     const movie = movieRepository.create({
